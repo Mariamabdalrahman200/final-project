@@ -1,10 +1,10 @@
-// import 'package:course_getx/controller/height_controller.dart';
-// import 'package:course_getx/custom_widgets/height_line.dart';
-// import 'package:course_getx/custom_widgets/primary_title_widget.dart';
+
+import 'package:final_project/core/const_data/app_colors.dart';
 import 'package:final_project/view/auth/register/controller/register_controller.dart';
 import 'package:final_project/view/auth/widget/height_line.dart';
 import 'package:final_project/view/auth/widget/primary_title_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:final_project/view/auth/widget/custom_botton.dart';
 import 'package:get/get.dart';
 
 class HeightScreen extends StatelessWidget {
@@ -74,35 +74,52 @@ class HeightScreen extends StatelessWidget {
                     value: height,
                     min: 140,
                     max: 180,
-                    activeColor: Colors.blueAccent,
+                    activeColor: AppColor.primaryColor,
+                  //    activeColor: Colors.blueAccent,
                     onChanged: (value) {
                       controller.updateHeight(value);
                     },
                   ),
                   Text(
                     '${height.toStringAsFixed(1)} cm',
-                    style: const TextStyle(
-                        fontSize: 28,
+                    style: TextStyle(
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blueAccent),
+                      //  color: Colors.blueAccent),
+                          color: AppColor.thirdColor),
                   ),
                   const SizedBox(height: 20),
-                  SizedBox(
-                    height: 50,
-                    width: 250,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue),
-                      child: const Text(
-                        "Next",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                      onPressed: () {
-                        print('The height is: ${controller.getHeight()}');
-                        Get.toNamed('/secondScreen');
-                      },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: CustomButton(
+                            text: 'Next',
+                            onTap: () {
+                             print('The height is: ${controller.getHeight()}');
+                           Get.toNamed('/secondScreen');
+                              }
+                            
+                          ),
                     ),
-                  ),
+                  // SizedBox(
+                  //   height: 50,
+                  //   width: 250,
+
+
+
+                    
+                  //   child: ElevatedButton(
+                  //     style: ElevatedButton.styleFrom(
+                  //         backgroundColor: Colors.blue),
+                  //     child: const Text(
+                  //       "Next",
+                  //       style: TextStyle(color: Colors.white, fontSize: 20),
+                  //     ),
+                  //     onPressed: () {
+                  //       print('The height is: ${controller.getHeight()}');
+                  //       Get.toNamed('/secondScreen');
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
             ),

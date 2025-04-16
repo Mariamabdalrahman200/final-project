@@ -16,7 +16,7 @@ class SelectCoachScreen extends StatelessWidget {
     return GetBuilder<SelectCoachController>(
         //  init: SelectCoachController(),
         builder: (controller) => Scaffold(
-                body: SingleChildScrollView(
+              body: SingleChildScrollView(
               child: SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -39,8 +39,8 @@ class SelectCoachScreen extends StatelessWidget {
                       Text("Select a coach to start your fitness journey",
                           style: TextStyle(
                               fontSize: 26,
-                              //    fontWeight: FontWeight.bold,
-                              fontWeight: FontWeight.w600,
+                               fontWeight: FontWeight.bold,
+                            //  fontWeight: FontWeight.w700,
                               fontFamily: 'SourceSerif4')),
                       SizedBox(
                         height: media.width * 0.12,
@@ -125,7 +125,7 @@ class SelectCoachScreen extends StatelessWidget {
                           // Get.offNamed('/secondScreen');
                           //  controller.register();
                           controller.sendRequestToCoach(
-    controller.coaches[controller.selectedCoachIndex].id.toString());
+         controller.coaches[controller.selectedCoachIndex].id.toString());
 
                           // Get.toNamed('/experianseScreen');
                         },

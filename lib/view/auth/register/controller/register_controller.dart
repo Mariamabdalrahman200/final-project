@@ -5,6 +5,8 @@ import 'package:final_project/core/const_data/routes.dart';
 import 'package:final_project/core/service/app_keys.dart';
 import 'package:final_project/core/service/link.dart';
 import 'package:final_project/core/service/my_service.dart';
+import 'package:final_project/core/service/session/user_info_controller.dart';
+import 'package:final_project/core/service/session/user_session.dart';
 import 'package:final_project/models/gender_model/gender_model.dart';
 import 'package:final_project/models/height_model/height_model.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +29,7 @@ class RegisterController extends GetxController {
   String responceMessage = '';
   double currentValue = 50.0;
   String selectedUserType = "trainer";
-    int experianseLevelIndex = 0;
+  int experianseLevelIndex = 0;
   List<String> goals = [
     "lose_weight",
     "build_muscle",
@@ -40,16 +42,16 @@ class RegisterController extends GetxController {
   ];
   int selectedGoalIndex = 1;
 
-
-
-    void changeUserType(String userType) {
+  void changeUserType(String userType) {
     selectedUserType = userType;
-    update(); 
+    update();
   }
+
   void selectGoal(int index) {
     selectedGoalIndex = index;
     update();
   }
+
   void experianseLevel(int index) {
     experianseLevelIndex = index;
     update();
@@ -94,7 +96,7 @@ class RegisterController extends GetxController {
   //     return null;
   //   }
   // }
-    String? validPhoneNumber(String? data) {
+  String? validPhoneNumber(String? data) {
     if (data == null || data.isEmpty) {
       return 'This field is required';
     } else if (!RegExp(r'^[0-9]{10}$').hasMatch(data)) {
@@ -123,7 +125,7 @@ class RegisterController extends GetxController {
     this.isLoading = true;
     this.responce = StatusRequest.loading;
     update();
-
+    double height = heightModel.value.height;
     Either<StatusRequest, Map> result =
         await crud().postData(AppLink.register, {
       "username": this.usernameController.text,
@@ -132,6 +134,7 @@ class RegisterController extends GetxController {
       "email": this.emailController.text,
       "password": this.passwordController.text,
       "weight": currentValue.toString(),
+      "height": height.toString(),
       "experianse_level": experianse_level[experianseLevelIndex],
       "goal": goals[selectedGoalIndex],
       "gender": selectedGenderIndex.value,
@@ -141,10 +144,8 @@ class RegisterController extends GetxController {
     });
     result.fold(
       (failure) {
-        
         isLoading = false;
 
-      
         if (failure == StatusRequest.failure) {
           this.responceMessage = crud.message;
           Get.snackbar(
@@ -172,19 +173,24 @@ class RegisterController extends GetxController {
         }
         update();
       },
-      (success) async{
-  
+      (success) async {
         isLoading = false;
         responce = StatusRequest.success;
+        final userController = Get.put(UserController());
+        await userController.getInfo();
 
-      // String userId = success['user']['id'].toString();
-      // await MyService().saveStringValue(AppKeys.userIdKey, userId.toString());
+        // String userId = success['user']['id'].toString();
+        // await MyService().saveStringValue(AppKeys.userIdKey, userId.toString());
 
-       UserModel userModel = UserModel.fromJson(Map<String, dynamic>.from(success));
-
-      // حفظ بيانات المستخدم باستخدام SharedPreferences
-      await MyService().saveStringValue(
-          AppKeys.userIdKey, userModel.user.id.toString());
+//        UserModel userModel = UserModel.fromJson(Map<String, dynamic>.from(success));
+// await MyService().saveStringValue(
+//     AppKeys.userDataKey,
+//     json.encode(userModel.toJson()) // تحويل كامل الكائن لـ JSON
+//   );
+//   await UserSession.loadUser();
+        // حفظ بيانات المستخدم باستخدام SharedPreferences
+        // await MyService().saveStringValue(
+        //   AppKeys.userIdKey, userModel.user.id.toString());
 
         String successMessage = "success";
         Get.snackbar(
@@ -216,10 +222,6 @@ class RegisterController extends GetxController {
     update();
   }
 
-
-
-
-
   var genders = <Gender>[
     Gender(image: "assets/images/male.png", caption: "male"),
     Gender(image: "assets/images/female.png", caption: "female"),
@@ -231,15 +233,12 @@ class RegisterController extends GetxController {
     selectedGenderIndex.value = index;
   }
 
-  //انتي هاد يلي بيهمك
+
   String SelectedGender() {
     return genders[selectedGenderIndex.value].caption;
   }
 
-
-
-
-   var heightModel = HeightModel().obs;
+  var heightModel = HeightModel().obs;
 
   void updateHeight(double value) {
     heightModel.update((val) {
@@ -247,7 +246,7 @@ class RegisterController extends GetxController {
     });
   }
 
-  //انتي هاد يلي بيهمك
+
   double getHeight() {
     return heightModel.value.height;
   }

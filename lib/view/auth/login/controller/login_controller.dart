@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:final_project/core/class/crud.dart';
 import 'package:final_project/core/class/status_request.dart';
@@ -5,6 +6,8 @@ import 'package:final_project/core/const_data/routes.dart';
 import 'package:final_project/core/service/app_keys.dart';
 import 'package:final_project/core/service/link.dart';
 import 'package:final_project/core/service/my_service.dart';
+import 'package:final_project/core/service/session/user_info_controller.dart';
+import 'package:final_project/core/service/session/user_session.dart';
 import 'package:final_project/models/user_model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -93,12 +96,24 @@ class LoginController extends GetxController {
         // حالة النجاح
         isLoading = false;
         responce = StatusRequest.success;
-               UserModel userModel = UserModel.fromJson(Map<String, dynamic>.from(success));
 
-      // حفظ بيانات المستخدم باستخدام SharedPreferences
-      await MyService().saveStringValue(
-          AppKeys.userIdKey, userModel.user.id.toString());
+        //  UserModel userModel = UserModel.fromJson(Map<String, dynamic>.from(success));
 
+        final userController = Get.put(UserController(), permanent: true);
+
+        // final userController = Get.put(UserController());
+        await userController.getInfo();
+
+        // حفظ بيانات المستخدم باستخدام SharedPreferences
+        // await MyService().saveStringValue(
+        //     AppKeys.userIdKey, userModel.user.id.toString());
+        // await MyService().saveStringValue(AppKeys.userfirstNameKey, userModel.user.firstName);
+
+// await MyService().saveStringValue(
+//     AppKeys.userDataKey,
+//     json.encode(userModel.toJson()) // تحويل كامل الكائن لـ JSON
+//   );
+//   await UserSession.getInfo();
         //  String successMessage = success['message'];
         Get.snackbar(
           " ",
@@ -118,9 +133,24 @@ class LoginController extends GetxController {
             ),
           ],
         );
-        String? userId = await MyService().getStringValue(AppKeys.userIdKey);
-        print("______________${userId}");
-        Get.toNamed(Routes.homeScreen);
+        // String? userId = await MyService().getStringValue(AppKeys.userIdKey);
+        // print("______________${userId}");
+        // Get.toNamed(Routes.homeScreen);
+
+        String userType = userController.currentUser!.userType;
+        await MyService().saveStringValue(AppKeys.userTypeKey, userType);
+
+        if (userType == 'coach') {
+          Get.offNamed(Routes.coachHomeScreen);
+        } else if (userType == 'trainer') {
+          Get.offNamed(Routes.homeScreen);
+        } else {
+          Get.snackbar(
+            "Error",
+            "User type not recognized",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
 
         update();
       },

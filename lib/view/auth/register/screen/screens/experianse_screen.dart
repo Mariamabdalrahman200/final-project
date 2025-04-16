@@ -47,29 +47,6 @@ class ExperianseScreen extends StatelessWidget {
                     height: media.width * 0.18,
                   ),
         
-                  // Wrap(
-                  //   children: controller.experianse_level.map((e) {
-                  //     return InkWell(
-                  //       onTap: () {},
-                  //       child: Container(
-                  //         margin: EdgeInsets.all(8),
-                  //         padding: EdgeInsets.symmetric(
-                  //             vertical: 12, horizontal: 14),
-                  //         decoration: BoxDecoration(
-                  //           color: AppColor.lightgrey,
-                  //           borderRadius: BorderRadius.circular(20),
-                  //         ),
-                  //         child: Text(
-                  //           e,
-                  //           style: TextStyle(
-                  //             fontSize: 20,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     );
-                  //   }).toList(),
-                  // ),
-        
                   Container(
                     //  height: MediaQuery.of(context).size.height,
                     height: media.height * 0.32,

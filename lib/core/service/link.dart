@@ -9,18 +9,12 @@ class AppLink {
   static String login = "$appRoot/login/";
   static String coaches = "$appRoot/coaches/";
   static String sendjoinrequest = "$appRoot/sendjoinrequest";
+  static String getjoinrequests = "$appRoot/getjoinrequests";
+  static String getuser = "$appRoot/user";
+  static String getInfo = "$appRoot/getInfo/";
+  static String responsetojoinrequest = "$appRoot/responsetojoinrequest";
+  static String traineesWithSpecificCoach = "$appRoot/trainers";
   
-  
-  //static String login = "$appApi/login";
-  //static String logout = "$appApi/logout";
-
-
-
-  // static String addCountry= "$appApi/add-country";
-  // static String countries= "$appApi/api/countries";
-
-
-
 
   Map<String, String> getHeader() {
     Map<String, String> mainHeader = {

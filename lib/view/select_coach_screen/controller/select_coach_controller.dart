@@ -6,7 +6,11 @@ import 'package:final_project/core/const_data/routes.dart';
 import 'package:final_project/core/service/app_keys.dart';
 import 'package:final_project/core/service/link.dart';
 import 'package:final_project/core/service/my_service.dart';
+import 'package:final_project/core/service/session/user_info_controller.dart';
+import 'package:final_project/core/service/session/user_session.dart';
 import 'package:final_project/models/coach_model/coach_model.dart';
+import 'package:final_project/models/user_info_model/user_info_model.dart';
+import 'package:final_project/models/user_model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,16 +18,13 @@ class SelectCoachController extends GetxController {
   bool isLoading = false;
   StatusRequest responce = StatusRequest.loading;
   String responceMessage = '';
-  List<Coach> coaches = [];
+  List<UserInfoModel> coaches = [];
   int selectedCoachIndex = 1;
 
   void selectCoach(int index) {
     selectedCoachIndex = index;
     update();
   }
-
-
-
 
   Future getCoaches() async {
     this.isLoading = true;
@@ -63,111 +64,93 @@ class SelectCoachController extends GetxController {
         }
         update();
       },
-    (success) {
+      (success) {
         // إذا نجح الطلب
         responce = StatusRequest.success;
         // coaches = success.map((item) => Coach.fromJson(item)).toList();
         // List<dynamic> data = success;
-      
-  
-   coaches = success.map((item) => Coach.fromJson(item)).toList();
-    
-    //    coaches = data.map((item) => Coach.fromJson(item)).toList();
+
+        coaches = success.map((item) => UserInfoModel.fromJson(item)).toList();
+
+        //    coaches = data.map((item) => Coach.fromJson(item)).toList();
         //  coaches = result;
-         isLoading = false;
+        isLoading = false;
         update();
       },
     );
   }
 
-
   Future sendRequestToCoach(String coachId) async {
-  try {
-    // الحصول على id المتدرب من SharedPreferences
-    String? userId = await MyService().getStringValue(AppKeys.userIdKey);
+    try {
+      // الحصول على id المتدرب من SharedPreferences
+      // String? userId = await MyService().getStringValue(AppKeys.userIdKey);
 
-    if (userId == null) {
-      Get.snackbar("Error", "User ID not found. Please login again.",
-          snackPosition: SnackPosition.BOTTOM);
-      return;
-    }
+      // if (userId == null) {
+      //   Get.snackbar("Error", "User ID not found. Please login again.",
+      //       snackPosition: SnackPosition.BOTTOM);
+      //   return;
+      // }
+      // UserModel? user =
+      //     await MyService().getUserData(); // جلب كامل بيانات المستخدم
 
-    
-    print("Sending request to: ${AppLink.sendjoinrequest}/$userId/$coachId");
-    print("Request Body: ${jsonEncode({
-      "user_id": userId,
-      "coach_id": coachId,
-    })}");
-    Either<StatusRequest, Map> result = await crud().postData(
-      "${AppLink.sendjoinrequest}/$userId/$coachId/", // رابط API لإرسال الطلب
-      {
-        "user_id": userId,
-        "coach_id": coachId,
-      },
-      {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-    );
+      // if (user == null) {
+      //   Get.snackbar("Error", "User not logged in. Please login again.",
+      //       snackPosition: SnackPosition.BOTTOM);
+      //   return;
+      // }
 
-    result.fold(
-      (failure) {
-        if (failure == StatusRequest.failure) {
-          Get.snackbar("Error", "Failed to send request.",
+      // String userId = user.user.id.toString();
+      // final user = UserSession.currentUser;
+
+      // String userId = user!.user.id.toString();
+       final UserController userController = Get.find();
+      String userId = userController.currentUser!.id.toString();
+      print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${userId}");
+
+      print("Sending request to: ${AppLink.sendjoinrequest}/$userId/$coachId");
+      print("Request Body: ${jsonEncode({
+            "user_id": userId,
+            "coach_id": coachId,
+          })}");
+      Either<StatusRequest, Map> result = await crud().postData(
+        "${AppLink.sendjoinrequest}/$userId/$coachId/", // رابط API لإرسال الطلب
+        {
+          "user_id": userId,
+          "coach_id": coachId,
+        },
+        {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      );
+
+      result.fold(
+        (failure) {
+          if (failure == StatusRequest.failure) {
+            Get.snackbar("Error", "Failed to send request.",
+                snackPosition: SnackPosition.BOTTOM);
+          } else if (failure == StatusRequest.offLineFailure) {
+            Get.defaultDialog(
+                title: "Error", middleText: "No internet connection.");
+          } else if (failure == StatusRequest.serverFailure) {
+            Get.defaultDialog(title: "Error", middleText: "Server error.");
+          }
+        },
+        (success) {
+          print("Response body: $success");
+          Get.snackbar(" ", "Request sent successfully",
               snackPosition: SnackPosition.BOTTOM);
-        } else if (failure == StatusRequest.offLineFailure) {
-          Get.defaultDialog(
-              title: "Error", middleText: "No internet connection.");
-        } else if (failure == StatusRequest.serverFailure) {
-          Get.defaultDialog(title: "Error", middleText: "Server error.");
-        }
-      },
-      (success) {
-
-        print("Response body: $success");
-        Get.snackbar(" ", "Request sent successfully",
-            snackPosition: SnackPosition.BOTTOM);
-      },
-    );
-  } catch (e) {
-    print("Error: $e");
-    Get.snackbar("Error", "An unexpected error occurred.",
-        snackPosition: SnackPosition.BOTTOM);
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+      Get.snackbar("Error", "An unexpected error occurred.",
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
-}
 
 
-
-
-
-
-
-
-
-
-// Future<UserModel?> getUserData() async {
-//   String? userData = await MyService().getStringValue(AppKeys.userDataKey);
-
-//   if (userData == null) {
-//     return null;
-//   }
-
-//   return UserModel.fromRawJson(userData);
-// }
-// Future<void> sendRequestToCoach(int coachId) async {
-//   UserModel? userModel = await getUserData();
-
-//   if (userModel == null) {
-//     Get.snackbar("Error", "User data not found");
-//     return;
-//   }
-
-//   Map<String, dynamic> requestData = {
-//     "user_id": userModel.user.id,
-//     "coach_id": coachId,
-//   };
-
-   void onInit() {
+  void onInit() {
     super.onInit();
     getCoaches();
   }

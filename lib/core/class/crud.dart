@@ -8,66 +8,92 @@ import 'package:http/http.dart ' as http;
 import 'check_internat.dart';
 
 class crud {
-static String message = '';
-Future<Either<StatusRequest, Map>> postData(
-    String LinkUrl, Map data, Map<String, String> header) async {
-  try {
-    if (await checkInternet()) {
-      var response = await http.post(Uri.parse(LinkUrl),
-          body: jsonEncode(data),
-          //  body: data,
-          headers: header);
-      print(response);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        var responseBody = jsonDecode(response.body);
-        print(response.body);
-        if (responseBody.containsKey('data') &&
-            responseBody['data'].containsKey('token')) {
-          var token = responseBody['data']['token'];
-          await MyService().saveStringValue(AppKeys.storeTokenkey, token);
-          await MyService().setConstantToken();
-        }
-        return Right(responseBody);
-      } else {
-        var responseBody = jsonDecode(response.body);
-        print("Error Response: ${responseBody}");
-        if (responseBody.containsKey('message')) {
-          message = responseBody['message'];
+  static String message = '';
+  Future<Either<StatusRequest, Map>> postData(
+      String LinkUrl, Map data, Map<String, String> header) async {
+    try {
+      if (await checkInternet()) {
+        var response = await http.post(Uri.parse(LinkUrl),
+            body: jsonEncode(data),
+            //  body: data,
+            headers: header);
+        print(response);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          var responseBody = jsonDecode(response.body);
+          print(response.body);
+          if (responseBody.containsKey('token')) {
+            var token = responseBody['token'];
+            print("Token from response: $token");
+            await MyService().saveStringValue(AppKeys.storeTokenkey, token);
+            await MyService().setConstantToken();
+          }
+          return Right(responseBody);
         } else {
-          message = 'حدث خطأ غير معروف';
-        }
-        print (message);
+          var responseBody = jsonDecode(response.body);
+          print("Error Response: ${responseBody}");
+          if (responseBody.containsKey('message')) {
+            message = responseBody['message'];
+          } else {
+            message = 'حدث خطأ غير معروف';
+          }
+          print(message);
 
-        return const Left(StatusRequest.failure);
+          return const Left(StatusRequest.failure);
+        }
+      } else {
+        return const Left(StatusRequest.serverFailure);
       }
-    } else {
+    } catch (_) {
+      print(_);
       return const Left(StatusRequest.serverFailure);
     }
-  } catch (_) {
-    print(_);
-    return const Left(StatusRequest.serverFailure);
   }
-}
 
-
-Future<Either<StatusRequest, List<dynamic>>> getData(String linkUrl) async {
+  Future<Either<StatusRequest, List<dynamic>>> getData(String linkUrl) async {
     try {
       if (await checkInternet()) {
         var response = await http.get(Uri.parse(linkUrl), headers: {
-        //  'authorization': 'Bearer ${ConstData.token}',
+          //  'authorization': 'Bearer ${ConstData.token}',
           'Accept': 'application/json'
         });
         if (response.statusCode == 200 || response.statusCode == 201) {
-      //    Map responsebody = jsonDecode(response.body);
-           List<dynamic> responsebody = jsonDecode(response.body);
+          //    Map responsebody = jsonDecode(response.body);
+          List<dynamic> responsebody = jsonDecode(response.body);
           print("========== $responsebody ==========");
           return Right(responsebody);
         } else {
           return const Left(StatusRequest.serverFailure);
         }
       } else {
-      return const Left(StatusRequest.offLineFailure);
+        return const Left(StatusRequest.offLineFailure);
+      }
+    } catch (e) {
+      print(e);
+      return const Left(StatusRequest.serverFailure);
     }
+  }
+
+  Future<Either<StatusRequest, Map<String, dynamic>>> getObject(String linkUrl,
+      {Map<String, String>? headers}) async {
+    try {
+      if (await checkInternet()) {
+        var response = await http.get(Uri.parse(linkUrl), headers: headers);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          var responseBody = jsonDecode(response.body);
+
+          // التحقق مما إذا كانت الاستجابة كائنًا
+          if (responseBody is Map<String, dynamic>) {
+            return Right(responseBody); 
+          } else {
+            return const Left(
+                StatusRequest.serverFailure); 
+          }
+        } else {
+          return const Left(StatusRequest.serverFailure);
+        }
+      } else {
+        return const Left(StatusRequest.offLineFailure);
+      }
     } catch (e) {
       print(e);
       return const Left(StatusRequest.serverFailure);

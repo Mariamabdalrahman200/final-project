@@ -12,7 +12,6 @@ class LoginScreen extends StatelessWidget {
      var media = MediaQuery.of(context).size;
     final LoginController loginController = Get.put(LoginController());
     return GetBuilder<LoginController>(
-        //init: LoginController(),
         builder: (controller) =>
             Form(
               key: controller.formKey,

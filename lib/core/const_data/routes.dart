@@ -11,6 +11,10 @@ class Routes {
   static String selectCoachScreen = "/selectCoachScreen";
   static String heightScreen = "/heightScreen";
   static String genderSelectionScreen = "/genderSelectionScreen";
+  static String coachHomeScreen = "/coachHomeScreen";
+  static String requestsScreen = "/requestsScreen";
+  static String myTraineeScreen = "/myTraineeScreen";
+  
   
   
 }
