@@ -4,7 +4,6 @@ import 'package:final_project/view/requests_screen/controller/requests_controlle
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:final_project/models/request_model/request_model.dart';
-import 'package:final_project/models/user_model/user_model.dart';
 import 'package:intl/intl.dart';
 
 class RequestDetailsSheet extends StatelessWidget {

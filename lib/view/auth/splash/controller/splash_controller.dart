@@ -11,22 +11,21 @@ class SplashController extends GetxController {
   @override
   Future<void> onInit() async {
     super.onInit();
-
     navigateToLogin();
   }
 
   void navigateToLogin() async {
     await Future.delayed(const Duration(seconds: 2));
-    String? userType = await MyService().getStringValue(AppKeys.userTypeKey);
-    // ConstData.token == "" ? Get.offNamed('/usertypeScreen') : Get.off(const HomeScreen());
+  //  String? userType = await MyService().getStringValue(AppKeys.userTypeKey);
+  // ConstData.token == "" ? Get.offNamed('/usertypeScreen') : Get.off(const HomeScreen());
     if (ConstData.token == "") {
       Get.offNamed('/usertypeScreen');
     } else {
       final userController = Get.put(UserController(), permanent: true);
     await userController.getInfo();
-      if (userType == 'coach') {
+      if (userController.currentUser!.userType == 'coach') {
         Get.offAllNamed(Routes.coachHomeScreen);
-      } else if (userType == 'trainer') {
+      } else if (userController.currentUser!.userType == 'trainer') {
         Get.offAllNamed(Routes.homeScreen);
       }
     }

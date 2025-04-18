@@ -100,8 +100,6 @@ class LoginController extends GetxController {
         //  UserModel userModel = UserModel.fromJson(Map<String, dynamic>.from(success));
 
         final userController = Get.put(UserController(), permanent: true);
-
-        // final userController = Get.put(UserController());
         await userController.getInfo();
 
         // حفظ بيانات المستخدم باستخدام SharedPreferences

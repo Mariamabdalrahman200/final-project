@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:final_project/core/class/crud.dart';
 import 'package:final_project/core/class/status_request.dart';
+import 'package:final_project/core/const_data/app_colors.dart';
 import 'package:final_project/core/const_data/routes.dart';
 import 'package:final_project/core/service/app_keys.dart';
 import 'package:final_project/core/service/link.dart';
@@ -20,6 +21,7 @@ class SelectCoachController extends GetxController {
   String responceMessage = '';
   List<UserInfoModel> coaches = [];
   int selectedCoachIndex = 1;
+  bool isSendingRequest = false;
 
   void selectCoach(int index) {
     selectedCoachIndex = index;
@@ -82,6 +84,30 @@ class SelectCoachController extends GetxController {
 
   Future sendRequestToCoach(String coachId) async {
     try {
+      Get.dialog(
+        Center(
+          child: Column(
+           mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(
+                "Please wait...",
+                style: TextStyle(
+                  decoration: TextDecoration.none,
+                  fontSize: 16,
+                  color:  Color(0xFFF0F8FF),
+                ),
+              ),
+            ],
+          ),
+        ),
+        barrierDismissible: false,
+        barrierColor: Colors.black.withOpacity(0.5), // خلفية شفافة داكنة
+      );
+
       // الحصول على id المتدرب من SharedPreferences
       // String? userId = await MyService().getStringValue(AppKeys.userIdKey);
 
@@ -103,7 +129,9 @@ class SelectCoachController extends GetxController {
       // final user = UserSession.currentUser;
 
       // String userId = user!.user.id.toString();
-       final UserController userController = Get.find();
+      isSendingRequest = true;
+      update();
+      final UserController userController = Get.find();
       String userId = userController.currentUser!.id.toString();
       print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${userId}");
 
@@ -123,12 +151,32 @@ class SelectCoachController extends GetxController {
           "Accept": "application/json",
         },
       );
-
+      // إخفاء شاشة التحميل
+      if (Get.isDialogOpen!) {
+        Get.back();
+      }
       result.fold(
         (failure) {
+          
           if (failure == StatusRequest.failure) {
-            Get.snackbar("Error", "Failed to send request.",
-                snackPosition: SnackPosition.BOTTOM);
+                this.responceMessage = crud.message;
+          Get.snackbar(
+            " ",
+            responceMessage,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.grey[200],
+            colorText: Colors.black,
+            margin: EdgeInsets.all(10),
+            borderRadius: 8,
+            boxShadows: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          );
           } else if (failure == StatusRequest.offLineFailure) {
             Get.defaultDialog(
                 title: "Error", middleText: "No internet connection.");
@@ -143,12 +191,17 @@ class SelectCoachController extends GetxController {
         },
       );
     } catch (e) {
+      if (Get.isDialogOpen!) {
+        Get.back();
+      }
       print("Error: $e");
       Get.snackbar("Error", "An unexpected error occurred.",
           snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isSendingRequest = false;
+      update();
     }
   }
-
 
   void onInit() {
     super.onInit();

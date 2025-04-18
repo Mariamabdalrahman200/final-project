@@ -118,9 +118,9 @@ class RegisterController extends GetxController {
     print("Email: ${emailController.text}");
     print("Password: ${passwordController.text}");
     // print("Password Confirmation: ${confirmPasswordController.text}");
-    if (!registerFormKey.currentState!.validate()) {
-      return;
-    }
+    // if (!registerFormKey.currentState!.validate()) {
+    //   return;
+    // }
 
     this.isLoading = true;
     this.responce = StatusRequest.loading;
@@ -176,7 +176,7 @@ class RegisterController extends GetxController {
       (success) async {
         isLoading = false;
         responce = StatusRequest.success;
-        final userController = Get.put(UserController());
+        final userController = Get.put(UserController(), permanent: true);
         await userController.getInfo();
 
         // String userId = success['user']['id'].toString();
@@ -210,7 +210,7 @@ class RegisterController extends GetxController {
             ),
           ],
         );
-        Get.toNamed(Routes.selectCoachScreen);
+        Get.offAllNamed(Routes.selectCoachScreen);
 
         update();
       },
