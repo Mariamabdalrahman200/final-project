@@ -14,6 +14,8 @@ class Routes {
   static String coachHomeScreen = "/coachHomeScreen";
   static String requestsScreen = "/requestsScreen";
   static String myTraineeScreen = "/myTraineeScreen";
+  static String makeProgramScreen = "/makeProgramScreen";
+  
   
   
   

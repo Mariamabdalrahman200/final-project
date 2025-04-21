@@ -16,7 +16,7 @@ class CoachHomeController extends GetxController {
   void fetchUsername() {
   
        final UserController userController = Get.find();
-      String firstName = userController.currentUser!.firstName;
+      String firstName = userController.currentUser!.username;
     if (userController != null) {
       storedUsername=firstName;
     } else {

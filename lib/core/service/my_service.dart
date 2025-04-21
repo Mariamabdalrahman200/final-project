@@ -31,9 +31,18 @@ class MyService extends GetxService {
   await sharedPreferences.remove(key);
 }
 
+  // Future<void> setConstantToken() async {
+  //   ConstData.token = (await this.getStringValue(AppKeys.storeTokenkey))!;
+  //   print('Token:${ConstData.token}');
+  // }
   Future<void> setConstantToken() async {
-    ConstData.token = (await this.getStringValue(AppKeys.storeTokenkey))!;
-    print('Token:${ConstData.token}');
+    String? token = await this.getStringValue(AppKeys.storeTokenkey);
+    if (token != null) {
+      ConstData.token = token;
+      print('Token:${ConstData.token}');
+    } else {
+      print("No token found in sharedPreferences");
+    }
   }
 
 

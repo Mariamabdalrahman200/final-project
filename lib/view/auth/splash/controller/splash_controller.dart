@@ -3,7 +3,7 @@ import 'package:final_project/core/const_data/routes.dart';
 import 'package:final_project/core/service/app_keys.dart';
 import 'package:final_project/core/service/my_service.dart';
 import 'package:final_project/core/service/session/user_info_controller.dart';
-import 'package:final_project/view/home/trainer_home_screen/screen/home_screen.dart';
+import 'package:final_project/view/home/trainer_home_screen/screen/trainer_home_screen.dart';
 
 import 'package:get/get.dart';
 

@@ -138,6 +138,7 @@ class RegisterController extends GetxController {
       "experianse_level": experianse_level[experianseLevelIndex],
       "goal": goals[selectedGoalIndex],
       "gender": selectedGenderIndex.value,
+      "phone": this.phoneController.text,
     }, {
       "Content-Type": "application/json",
       "Accept": "application/json",

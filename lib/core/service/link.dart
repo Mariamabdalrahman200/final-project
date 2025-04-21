@@ -14,8 +14,13 @@ class AppLink {
   static String getInfo = "$appRoot/getInfo/";
   static String responsetojoinrequest = "$appRoot/responsetojoinrequest";
   static String traineesWithSpecificCoach = "$appRoot/trainers";
+  static String getExercises = "$appRoot/exercises/listexercises/";
+  static String makeprogram = "$appRoot/exercises/makeprogram";
   
 
+  
+static String update_profile = "$appRoot/update_profile/";
+  static String delete_account = "$appRoot/delete/";
   Map<String, String> getHeader() {
     Map<String, String> mainHeader = {
       'Content - Type': 'application/json',
