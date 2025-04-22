@@ -79,9 +79,9 @@ class BuildProgramController extends GetxController {
           );
         } else if (failure == StatusRequest.offLineFailure) {
           Get.defaultDialog(
-              title: "خطأ", middleText: "لا يوجد اتصال بالإنترنت.");
+              title: "Error", middleText: "No internet connection");
         } else if (failure == StatusRequest.serverFailure) {
-          Get.defaultDialog(title: "خطأ", middleText: "حدث خطأ في الخادم.");
+          Get.defaultDialog(title: "Error", middleText: "A server error occurred");
         }
         update();
       },
