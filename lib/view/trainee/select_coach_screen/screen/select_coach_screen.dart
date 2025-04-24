@@ -1,7 +1,7 @@
 import 'package:final_project/core/const_data/app_colors.dart';
 import 'package:final_project/view/auth/widget/custom_botton.dart';
-import 'package:final_project/view/select_coach_screen/controller/select_coach_controller.dart';
-import 'package:final_project/view/select_coach_screen/widget/coach_details_sheet.dart';
+import 'package:final_project/view/trainee/select_coach_screen/controller/select_coach_controller.dart';
+import 'package:final_project/view/trainee/select_coach_screen/widget/coach_details_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

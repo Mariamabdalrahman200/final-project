@@ -12,7 +12,8 @@ class BuildProgramController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getExercises();
+  //  getExercises();
+   getExercisesByMuscle(selectedMuscle);
   }
 
   final setsController = TextEditingController();
@@ -30,6 +31,29 @@ class BuildProgramController extends GetxController {
     "Friday",
     "Saturday"
   ];
+  List<String> muscleGroups = [
+  'arm',
+  'Pectoralis',
+  'Rectus Abdominis',
+  'Latissimus Dorsi',
+  'Deltoids',
+  'Forearm Muscles',
+  'Quadriceps',
+  'Hamstrings',
+  'Trapezius',
+  'Obliques',
+];
+String? selectedMuscleGroup;
+String selectedMuscle = "arm";
+
+void selectMuscleGroup(String group) {
+  selectedMuscleGroup = group;
+  update();
+}
+
+
+
+
   //Map<String, Set<int>> selectedExercisesPerDay = {};
   Map<String, DayProgram> selectedPrograms = {};
   UserInfoModel? selectedUser;
@@ -47,55 +71,55 @@ class BuildProgramController extends GetxController {
     update();
   }
 
-  Future getExercises() async {
-    this.isLoading = true;
-    this.responce = StatusRequest.loading;
-    update();
-    var result = await crud().getData(
-      AppLink.getExercises,
-    );
-    result.fold(
-      (failure) {
-        isLoading = false;
+  // Future getExercises() async {
+  //   this.isLoading = true;
+  //   this.responce = StatusRequest.loading;
+  //   update();
+  //   var result = await crud().getData(
+  //     AppLink.getExercises,
+  //   );
+  //   result.fold(
+  //     (failure) {
+  //       isLoading = false;
 
-        if (failure == StatusRequest.failure) {
-          this.responceMessage = crud.message;
-          Get.snackbar(
-            " ",
-            responceMessage,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.grey[200],
-            colorText: Colors.black,
-            margin: EdgeInsets.all(10),
-            borderRadius: 8,
-            boxShadows: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 1,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          );
-        } else if (failure == StatusRequest.offLineFailure) {
-          Get.defaultDialog(
-              title: "Error", middleText: "No internet connection");
-        } else if (failure == StatusRequest.serverFailure) {
-          Get.defaultDialog(title: "Error", middleText: "A server error occurred");
-        }
-        update();
-      },
-      (success) {
-        responce = StatusRequest.success;
+  //       if (failure == StatusRequest.failure) {
+  //         this.responceMessage = crud.message;
+  //         Get.snackbar(
+  //           " ",
+  //           responceMessage,
+  //           snackPosition: SnackPosition.BOTTOM,
+  //           backgroundColor: Colors.grey[200],
+  //           colorText: Colors.black,
+  //           margin: EdgeInsets.all(10),
+  //           borderRadius: 8,
+  //           boxShadows: [
+  //             BoxShadow(
+  //               color: Colors.grey.withOpacity(0.5),
+  //               spreadRadius: 1,
+  //               blurRadius: 5,
+  //               offset: Offset(0, 3),
+  //             ),
+  //           ],
+  //         );
+  //       } else if (failure == StatusRequest.offLineFailure) {
+  //         Get.defaultDialog(
+  //             title: "Error", middleText: "No internet connection");
+  //       } else if (failure == StatusRequest.serverFailure) {
+  //         Get.defaultDialog(title: "Error", middleText: "A server error occurred");
+  //       }
+  //       update();
+  //     },
+  //     (success) {
+  //       responce = StatusRequest.success;
 
-        exercises =
-            success.map((item) => ExerciseModel.fromJson(item)).toList();
+  //       exercises =
+  //           success.map((item) => ExerciseModel.fromJson(item)).toList();
 
-        isLoading = false;
-        update();
-      },
-    );
-  }
+  //       isLoading = false;
+  //       update();
+  //     },
+  //   );
+  // }
 
   void toggleExerciseForDay(int exerciseId) {
     final current = selectedPrograms[selectedDay];
@@ -189,4 +213,23 @@ class BuildProgramController extends GetxController {
       update();
     }
   }
+
+  Future<void> getExercisesByMuscle(String muscle) async {
+  isLoading = true;
+  update();
+  var result = await crud().getData("${AppLink.exercisesbymuscle}/?q=$muscle");
+
+  result.fold(
+    (failure) {
+      isLoading = false;
+      update();
+      Get.snackbar("خطأ", "فشل في جلب التمارين");
+    },
+    (success) {
+      exercises = success.map<ExerciseModel>((e) => ExerciseModel.fromJson(e)).toList();
+      isLoading = false;
+      update();
+    },
+  );
+}
 }

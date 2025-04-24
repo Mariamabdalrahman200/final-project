@@ -16,6 +16,9 @@ class AppLink {
   static String traineesWithSpecificCoach = "$appRoot/trainers";
   static String getExercises = "$appRoot/exercises/listexercises/";
   static String makeprogram = "$appRoot/exercises/makeprogram";
+  static String exercisesbymuscle = "$appRoot/exercises/by-muscle";
+  static String gettrainerprogram = "$appRoot/exercises/gettrainerprogram";
+  
   
 
   
