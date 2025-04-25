@@ -18,6 +18,7 @@ class AppLink {
   static String makeprogram = "$appRoot/exercises/makeprogram";
   static String exercisesbymuscle = "$appRoot/exercises/by-muscle";
   static String gettrainerprogram = "$appRoot/exercises/gettrainerprogram";
+  static String updateprogrambydays = "$appRoot/exercises/updateprogrambydays";
   
   
 

@@ -1,4 +1,5 @@
 import 'package:final_project/core/const_data/app_colors.dart';
+import 'package:final_project/models/program_model/program_model.dart';
 import 'package:final_project/models/user_info_model/user_info_model.dart';
 import 'package:final_project/view/auth/widget/custom_botton.dart';
 import 'package:final_project/view/coach/build_program/controller/build_program_controller.dart';
@@ -7,15 +8,27 @@ import 'package:get/get.dart';
 
 class BuildProgramScreen extends StatelessWidget {
   final UserInfoModel user;
-  const BuildProgramScreen({super.key, required this.user});
+  final bool isEditMode;
+  final ProgramModel? existingProgram;
+  const BuildProgramScreen({
+    super.key,
+    required this.user,
+    this.isEditMode = false,
+    this.existingProgram,
+  });
 
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
     final BuildProgramController controller = Get.put(BuildProgramController());
 
-    return GetBuilder<BuildProgramController>(
-      builder: (controller) => Scaffold(
+    return GetBuilder<BuildProgramController>(builder: (controller) {
+      if (isEditMode &&
+          existingProgram != null &&
+          !controller.isEditInitialized) {
+        controller.initializeEditProgram(existingProgram!);
+      }
+      return Scaffold(
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -33,15 +46,16 @@ class BuildProgramScreen extends StatelessWidget {
                   ],
                 ),
                 // SizedBox(height: 50),
-                Text(
-                  "Let's create a plan for ${user.firstName}!!",
-                  style: TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'SourceSerif4',
+                if (!isEditMode)
+                  Text(
+                    "Let's create a plan for ${user.firstName}!!",
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'SourceSerif4',
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
                 SizedBox(height: 20),
 
                 Row(
@@ -149,205 +163,130 @@ class BuildProgramScreen extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                  SizedBox(height: 10),
+                SizedBox(height: 10),
 
-                controller.isLoading
-                    ? CircularProgressIndicator()
-                    :
-                    Container(
-                        height: 42,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: controller.muscleGroups.length,
-                          itemBuilder: (context, index) {
-                            final muscle = controller.muscleGroups[index];
-                            final isSelected =
-                                controller.selectedMuscle == muscle;
-
-                            final colors = [
-                              Color(0xffFDF6E4), // أصفر باهت
-                              Color(0xffF3E8FF), // بنفسجي فاتح
-                              Color(0xffE0F0FF), // أزرق فاتح
-                              Color(0xffDCFCE7), // أخضر ناعم
-                            ];
-                            final bgColor = colors[index % colors.length];
-
-                            return GestureDetector(
-                              onTap: () {
-                                controller.selectedMuscle = muscle;
-                                controller.getExercisesByMuscle(muscle);
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 6),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? AppColor.primaryColor
-                                      : bgColor,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: isSelected
-                                      ? Border.all(color: Colors.black12)
-                                      : null,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    muscle,
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? Colors.white
-                                          : Colors.black87,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                // ListView.builder(
-                //     shrinkWrap: true,
-                //     physics: NeverScrollableScrollPhysics(),
-                //     itemCount: controller.exercises.length,
-                //     itemBuilder: (context, index) {
-                //       final exercise = controller.exercises[index];
-                //       final isSelected = controller
-                //           .isExerciseSelected(exercise.exerciseId);
-
-                //       return GestureDetector(
-                //         onTap: () {
-                //           showDialog(
-                //             context: context,
-                //             builder: (_) => AlertDialog(
-                //               title: Text(exercise.name),
-                //               content: Text(
-                //                   "More details about this exercise..."),
-                //               actions: [
-                //                 TextButton(
-                //                   onPressed: () =>
-                //                       Navigator.of(context).pop(),
-                //                   child: Text("Close"),
-                //                 )
-                //               ],
-                //             ),
-                //           );
-                //         },
-                //         child: Container(
-                //           margin: EdgeInsets.symmetric(vertical: 6),
-                //           padding: EdgeInsets.symmetric(
-                //               horizontal: 16, vertical: 10),
-                //           decoration: BoxDecoration(
-                //             color: Colors.white,
-                //             borderRadius: BorderRadius.circular(16),
-                //             border: Border.all(
-                //                 color: Colors.grey.shade300, width: 1.5),
-                //             boxShadow: [
-                //               BoxShadow(
-                //                 color: Colors.black12,
-                //                 blurRadius: 4,
-                //                 offset: Offset(0, 2),
-                //               )
-                //             ],
-                //           ),
-                //           child: Row(
-                //             mainAxisAlignment:
-                //                 MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               Expanded(
-                //                 child: Text(
-                //                   exercise.name ?? 'No Name',
-                //                   style: TextStyle(
-                //                     fontWeight: FontWeight.w500,
-                //                     fontSize: 16,
-                //                   ),
-                //                 ),
-                //               ),
-                //               Checkbox(
-                //                 value: isSelected,
-                //                 onChanged: (value) {
-                //                   controller.toggleExerciseForDay(
-                //                       exercise.exerciseId);
-                //                 },
-                //                 activeColor: AppColor.primaryColor,
-                //                 checkColor: Colors.white,
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-                //       );
-                //     },
-                //   ),
-                Expanded(
+                Container(
+                  height: 42,
                   child: ListView.builder(
-                    itemCount: controller.exercises.length,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: controller.muscleGroups.length,
                     itemBuilder: (context, index) {
-                      final exercise = controller.exercises[index];
-                      final isSelected =
-                          controller.isExerciseSelected(exercise.exerciseId);
+                      final muscle = controller.muscleGroups[index];
+                      final isSelected = controller.selectedMuscle == muscle;
+                      final colors = [
+                        Color(0xffFDF6E4), // أصفر باهت
+                        Color(0xffF3E8FF), // بنفسجي فاتح
+                        Color(0xffE0F0FF), // أزرق فاتح
+                        Color(0xffDCFCE7), // أخضر ناعم
+                      ];
+                      final bgColor = colors[index % colors.length];
 
                       return GestureDetector(
                         onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                              title: Text(exercise.name),
-                              content:
-                                  Text("More details about this exercise..."),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: Text("Close"),
-                                )
-                              ],
-                            ),
-                          );
+                          controller.selectedMuscle = muscle;
+                          controller.getExercisesByMuscle(muscle);
                         },
                         child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 6),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
+                          margin: EdgeInsets.symmetric(horizontal: 6),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                                color: Colors.grey.shade300, width: 1.5),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              )
-                            ],
+                            color: isSelected ? AppColor.primaryColor : bgColor,
+                            borderRadius: BorderRadius.circular(20),
+                            border: isSelected
+                                ? Border.all(color: Colors.black12)
+                                : null,
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  exercise.name ?? 'No Name',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                  ),
-                                ),
+                          child: Center(
+                            child: Text(
+                              muscle,
+                              style: TextStyle(
+                                color:
+                                    isSelected ? Colors.white : Colors.black87,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
                               ),
-                              Checkbox(
-                                value: isSelected,
-                                onChanged: (value) {
-                                  controller.toggleExerciseForDay(
-                                      exercise.exerciseId);
-                                },
-                                activeColor: AppColor.primaryColor,
-                                checkColor: Colors.white,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       );
                     },
                   ),
+                ),
+              
+                Expanded(
+                  child: controller.isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          itemCount: controller.exercises.length,
+                          itemBuilder: (context, index) {
+                            final exercise = controller.exercises[index];
+                            final isSelected = controller
+                                .isExerciseSelected(exercise.exerciseId);
+
+                            return GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    title: Text(exercise.name),
+                                    content: Text(
+                                        "More details about this exercise..."),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: Text("Close"),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(vertical: 6),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                      color: Colors.grey.shade300, width: 1.5),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                    )
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        exercise.name ?? 'No Name',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                    Checkbox(
+                                      value: isSelected,
+                                      onChanged: (value) {
+                                        controller.toggleExerciseForDay(
+                                            exercise.exerciseId);
+                                      },
+                                      activeColor: AppColor.primaryColor,
+                                      checkColor: Colors.white,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                 ),
 
                 // SizedBox(height: 70),
@@ -358,13 +297,17 @@ class BuildProgramScreen extends StatelessWidget {
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(16.0),
           child: CustomButton(
-            text: "Send Program",
+            text: isEditMode ? "Update Program" : "Send Program",
             onTap: () {
-              controller.makeProgram(traineeId: user.id);
+              if (isEditMode) {
+                // controller.updateProgram(user.id); // تنفذ التعديل
+              } else {
+                controller.makeProgram(traineeId: user.id); // تنشئ جديد
+              }
             },
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

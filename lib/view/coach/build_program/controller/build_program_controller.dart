@@ -4,6 +4,7 @@ import 'package:final_project/core/service/link.dart';
 import 'package:final_project/core/service/session/user_info_controller.dart';
 import 'package:final_project/models/Day_program_model/Day_program.dart';
 import 'package:final_project/models/exersice_model/exersice_model.dart';
+import 'package:final_project/models/program_model/program_model.dart';
 import 'package:final_project/models/user_info_model/user_info_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,6 +23,7 @@ class BuildProgramController extends GetxController {
   StatusRequest responce = StatusRequest.loading;
   String responceMessage = '';
   List<ExerciseModel> exercises = [];
+  bool isEditInitialized = false;
   List<String> weekDays = [
     "Sunday",
     "Monday",
@@ -32,7 +34,7 @@ class BuildProgramController extends GetxController {
     "Saturday"
   ];
   List<String> muscleGroups = [
-  'arm',
+  'Biceps',
   'Pectoralis',
   'Rectus Abdominis',
   'Latissimus Dorsi',
@@ -44,7 +46,7 @@ class BuildProgramController extends GetxController {
   'Obliques',
 ];
 String? selectedMuscleGroup;
-String selectedMuscle = "arm";
+String selectedMuscle = "Biceps";
 
 void selectMuscleGroup(String group) {
   selectedMuscleGroup = group;
@@ -71,55 +73,6 @@ void selectMuscleGroup(String group) {
     update();
   }
 
-  // Future getExercises() async {
-  //   this.isLoading = true;
-  //   this.responce = StatusRequest.loading;
-  //   update();
-  //   var result = await crud().getData(
-  //     AppLink.getExercises,
-  //   );
-  //   result.fold(
-  //     (failure) {
-  //       isLoading = false;
-
-  //       if (failure == StatusRequest.failure) {
-  //         this.responceMessage = crud.message;
-  //         Get.snackbar(
-  //           " ",
-  //           responceMessage,
-  //           snackPosition: SnackPosition.BOTTOM,
-  //           backgroundColor: Colors.grey[200],
-  //           colorText: Colors.black,
-  //           margin: EdgeInsets.all(10),
-  //           borderRadius: 8,
-  //           boxShadows: [
-  //             BoxShadow(
-  //               color: Colors.grey.withOpacity(0.5),
-  //               spreadRadius: 1,
-  //               blurRadius: 5,
-  //               offset: Offset(0, 3),
-  //             ),
-  //           ],
-  //         );
-  //       } else if (failure == StatusRequest.offLineFailure) {
-  //         Get.defaultDialog(
-  //             title: "Error", middleText: "No internet connection");
-  //       } else if (failure == StatusRequest.serverFailure) {
-  //         Get.defaultDialog(title: "Error", middleText: "A server error occurred");
-  //       }
-  //       update();
-  //     },
-  //     (success) {
-  //       responce = StatusRequest.success;
-
-  //       exercises =
-  //           success.map((item) => ExerciseModel.fromJson(item)).toList();
-
-  //       isLoading = false;
-  //       update();
-  //     },
-  //   );
-  // }
 
   void toggleExerciseForDay(int exerciseId) {
     final current = selectedPrograms[selectedDay];
@@ -232,4 +185,37 @@ void selectMuscleGroup(String group) {
     },
   );
 }
+void initializeEditProgram(ProgramModel program) {
+  selectedPrograms.clear();
+
+  for (final element in program.exercises) {
+    final day = element.day;
+    final exerciseId = element.exercise.exerciseId;
+
+    if (!selectedPrograms.containsKey(day)) {
+      selectedPrograms[day] = DayProgram(
+        day: day,
+        exercises: [exerciseId],
+        sets: element.sets,
+        reps: element.reps,
+      );
+    } else {
+      selectedPrograms[day]!.exercises.add(exerciseId);
+    }
+  }
+
+  // نبدأ بأول يوم موجود
+  if (selectedPrograms.isNotEmpty) {
+    final firstDayEntry = selectedPrograms.entries.first;
+    selectedDay = firstDayEntry.key;
+    setsController.text = firstDayEntry.value.sets.toString();
+    repsController.text = firstDayEntry.value.reps.toString();
+  }
+
+  isEditInitialized = true;
+  update();
+}
+
+
+
 }

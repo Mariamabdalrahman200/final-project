@@ -4,6 +4,7 @@ import 'package:final_project/view/auth/widget/custom_botton.dart';
 import 'package:final_project/view/coach/build_program/screen/build_program_screen.dart';
 import 'package:final_project/view/coach/my_trainee/widget/trainee_details_sheet.dart';
 import 'package:final_project/view/coach/requests_screen/widget/request_detail_sheet.dart';
+import 'package:final_project/view/coach/view_trainee_workout/view_workout_screen/view_workout_screen.dart';
 import 'package:final_project/view/home/coach_home_screen/controller/coach_home_controller.dart';
 import 'package:final_project/view/coach/my_trainee/controller/my_trainee_controller.dart';
 import 'package:flutter/material.dart';
@@ -136,12 +137,8 @@ class MyTraineeScreen extends StatelessWidget {
                                                           ),
                                                           SizedBox(width: 16),
                                                           Expanded(
-                                                            // 🛠️ حتى لا يتجاوز الاسم المساحة
                                                             child: Text(
                                                               trainee.username,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
                                                               style: TextStyle(
                                                                 fontSize: 14,
                                                                 fontWeight:
@@ -161,17 +158,22 @@ class MyTraineeScreen extends StatelessWidget {
                                                             child:
                                                                 ElevatedButton(
                                                               onPressed: () {
-                                                                Get.to(() =>
-                                                                    BuildProgramScreen(
-                                                                        user:
-                                                                            trainee));
+                                                                hasProgram
+                                                                    ? Get.to(() =>
+                                                                        ViewWorkoutScreen(
+                                                                            user:
+                                                                                trainee))
+                                                                    : Get.to(() =>
+                                                                        BuildProgramScreen(
+                                                                            user:
+                                                                                trainee));
                                                               },
                                                               style:
                                                                   ElevatedButton
                                                                       .styleFrom(
                                                                 backgroundColor:
-                                                                    Color(
-                                                                        0xFFFFF6C2),
+                                                                  // Color(0xFFD1D9FF),
+                                                                   Color(0xFFD6EDFF),
                                                                 elevation: 0,
                                                                 padding: EdgeInsets
                                                                     .symmetric(
@@ -210,8 +212,11 @@ class MyTraineeScreen extends StatelessWidget {
                                                                   ElevatedButton
                                                                       .styleFrom(
                                                                 backgroundColor:
-                                                                    Color(
-                                                                        0xFFB2E9DB),
+                                                                    // Color(
+                                                                    //     0xFFB2E9DB),
+                                                                  Color(0xFFD1D9FF),
+                                                                      //  Color(0xFFF6E9F8),
+                                                                    //  backgroundColor: Color(0xFFF2D9FF),
                                                                 elevation: 0,
                                                                 padding: EdgeInsets
                                                                     .symmetric(

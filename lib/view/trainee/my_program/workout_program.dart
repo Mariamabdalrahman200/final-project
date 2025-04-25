@@ -20,23 +20,29 @@ class WorkoutProgram extends StatelessWidget {
     return GetBuilder<MyProgramController>(
       builder: (controller) => Scaffold(
           appBar: AppBar(
-          backgroundColor: AppColor.primaryColor ,
-          elevation: 0,
-          centerTitle: true, 
-          title: Text(
-            "My Program", 
+          title: const Text(
+            "workout",
             style: TextStyle(
-              color:Colors.white, 
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
+                fontSize: 26,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontFamily: "SourceSerif4",
+                shadows: [
+                  Shadow(
+                      color: Colors.black26,
+                      blurRadius: 0.2,
+                      offset: Offset(1, 2))
+                ]),
           ),
+          centerTitle: true,
+          backgroundColor: AppColor.primaryColor,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
               Get.back();
             },
           ),
+          elevation: 0,
         ),
         body: Stack(
           children:[ SafeArea(
@@ -97,13 +103,13 @@ class WorkoutProgram extends StatelessWidget {
             children: [
             
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Text(
                   muscleName,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColor.primaryColor,
+                    color: Colors.black,
                   ),
                 ),
               ),
@@ -118,7 +124,7 @@ class WorkoutProgram extends StatelessWidget {
                     margin: EdgeInsets.symmetric(vertical: 6),
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: AppColor.blue,
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
