@@ -19,8 +19,9 @@ class AppLink {
   static String exercisesbymuscle = "$appRoot/exercises/by-muscle";
   static String gettrainerprogram = "$appRoot/exercises/gettrainerprogram";
   static String updateprogrambydays = "$appRoot/exercises/updateprogrambydays";
-  
-  
+  static String getrequeststatus = "$appRoot/getrequeststatus";
+  static String updateprogram = "$appRoot/exercises/updateprogram";
+  static String deleteprogram = "$appRoot/exercises/deleteprogram";
 
   
 static String update_profile = "$appRoot/update_profile/";

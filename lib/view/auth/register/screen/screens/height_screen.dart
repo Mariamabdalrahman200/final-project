@@ -1,10 +1,12 @@
 
 import 'package:final_project/core/const_data/app_colors.dart';
+import 'package:final_project/core/responsive/responsive_config.dart';
 import 'package:final_project/view/auth/register/controller/register_controller.dart';
 import 'package:final_project/view/auth/widget/height_line.dart';
 import 'package:final_project/view/auth/widget/primary_title_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/view/auth/widget/custom_botton.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class HeightScreen extends StatelessWidget {
@@ -12,47 +14,55 @@ class HeightScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      final orientation = MediaQuery.of(context).orientation;
+  final isPortrait = orientation == Orientation.portrait;
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(),
-        body: Obx(() {
-          double height = controller.heightModel.value.height;
-          double screenHeight = MediaQuery.of(context).size.height;
-          double imageHeight = screenHeight * 0.6;
-          double topPosition = screenHeight * 0.6 - (height - 170) * 5;
-
-          return SizedBox(
-            height: screenHeight,
-            child: SingleChildScrollView(
+      child: ResponsiveConfig.setupResponsiveWrapper(
+        child: Scaffold(
+          appBar: AppBar(),
+          body: Obx(() {
+            double height = controller.heightModel.value.height;
+            double screenHeight = 1.sh;
+            double imageHeight = isPortrait
+    ? screenHeight * 0.6
+    : screenHeight * 0.8;
+          //  double topPosition = screenHeight * 0.6 - (height - 170) * 5;
+          double topPosition = (screenHeight * 0.6 - (height - 170) * 5).clamp(0.0, screenHeight * 0.8);
+        
+            return SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const PrimaryTitleWidget(text: "Specify your height"),
-                  SizedBox(
-                    height: screenHeight * 0.6,
+                ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: 300.h, 
+                maxHeight: isPortrait ? 0.6.sh : 0.9.sh,
+              ),
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
                         Positioned(
-                          top: topPosition - 430,
+                     //top: topPosition - 430,
+                   top: topPosition - (isPortrait ? 0.5.sh : 0.42.sh),
                           left: 0,
                           right: 0,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 10, right: 10),
+                               Padding(
+                               padding: EdgeInsets.symmetric(horizontal: 10.w),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Expanded(
                                       child: Height_line(),
                                     ),
-                                    SizedBox(width: 2),
+                                    SizedBox(width: 2.w),
                                     Text(
                                       "cm",
                                       style: TextStyle(
-                                          fontSize: 7,
+                                          fontSize: 7.sp,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ],
@@ -60,9 +70,10 @@ class HeightScreen extends StatelessWidget {
                               ),
                               Image.asset(
                                 'assets/images/male.png',
-                                width: MediaQuery.of(context).size.width,
+                              width: 1.sw, 
                                 height: imageHeight,
-                                fit: BoxFit.fitHeight,
+                                // fit: BoxFit.fitHeight,
+                                 fit: BoxFit.contain,
                               ),
                             ],
                           ),
@@ -83,14 +94,14 @@ class HeightScreen extends StatelessWidget {
                   Text(
                     '${height.toStringAsFixed(1)} cm',
                     style: TextStyle(
-                        fontSize: 26,
+                        fontSize: 26.sp,
                         fontWeight: FontWeight.bold,
                       //  color: Colors.blueAccent),
                           color: AppColor.thirdColor),
                   ),
-                  const SizedBox(height: 20),
+                   SizedBox(height: 20.h),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding:  EdgeInsets.symmetric(horizontal: 16.w),
                       child: CustomButton(
                             text: 'Next',
                             onTap: () {
@@ -103,9 +114,9 @@ class HeightScreen extends StatelessWidget {
                   // SizedBox(
                   //   height: 50,
                   //   width: 250,
-
-
-
+                    
+                    
+                    
                     
                   //   child: ElevatedButton(
                   //     style: ElevatedButton.styleFrom(
@@ -122,9 +133,9 @@ class HeightScreen extends StatelessWidget {
                   // ),
                 ],
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }

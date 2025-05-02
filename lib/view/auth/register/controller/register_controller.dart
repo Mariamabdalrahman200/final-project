@@ -6,7 +6,6 @@ import 'package:final_project/core/service/app_keys.dart';
 import 'package:final_project/core/service/link.dart';
 import 'package:final_project/core/service/my_service.dart';
 import 'package:final_project/core/service/session/user_info_controller.dart';
-import 'package:final_project/core/service/session/user_session.dart';
 import 'package:final_project/models/gender_model/gender_model.dart';
 import 'package:final_project/models/height_model/height_model.dart';
 import 'package:flutter/material.dart';

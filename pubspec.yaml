@@ -60,6 +60,7 @@ dependencies:
   marquee: ^2.2.3
   numberpicker: ^2.1.2
   flutter_number_picker: ^1.0.4
+  responsive_framework: ^1.5.1
 
 dev_dependencies:
   flutter_test:

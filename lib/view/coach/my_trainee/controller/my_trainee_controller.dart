@@ -4,18 +4,17 @@ import 'package:final_project/core/service/app_keys.dart';
 import 'package:final_project/core/service/link.dart';
 import 'package:final_project/core/service/my_service.dart';
 import 'package:final_project/core/service/session/user_info_controller.dart';
-import 'package:final_project/core/service/session/user_session.dart';
 import 'package:final_project/models/request_model/request_model.dart';
 import 'package:final_project/models/user_info_model/user_info_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MyTraineeController extends GetxController {
-  bool isLoading = false;
-  StatusRequest responce = StatusRequest.loading;
-  String responceMessage = '';
-  List<UserInfoModel> trainees = [];
-  Map<String, bool> traineeProgramStatus = {};
+  var isLoading = false.obs;
+  var responce = StatusRequest.loading.obs;
+  var responceMessage = ''.obs;
+  var trainees = <UserInfoModel>[].obs;
+  var traineeProgramStatus = <String, bool>{}.obs;
   @override
   void onInit() {
     super.onInit();
@@ -23,8 +22,8 @@ class MyTraineeController extends GetxController {
   }
 
   Future myTrainees() async {
-    this.isLoading = true;
-    this.responce = StatusRequest.loading;
+     isLoading.value = true;
+    responce.value = StatusRequest.loading;
     update();
 
        final UserController userController = Get.find();
@@ -35,13 +34,13 @@ class MyTraineeController extends GetxController {
         await crud().getData("${AppLink.traineesWithSpecificCoach}/$coachId/");
     result.fold(
       (failure) {
-        isLoading = false;
+        isLoading.value = false;
 
         if (failure == StatusRequest.failure) {
-          this.responceMessage = crud.message;
+          responceMessage.value  = crud.message;
           Get.snackbar(
             " ",
-            responceMessage,
+            responceMessage.value,
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.grey[200],
             colorText: Colors.black,
@@ -62,15 +61,15 @@ class MyTraineeController extends GetxController {
         } else if (failure == StatusRequest.serverFailure) {
           Get.defaultDialog(title: "خطأ", middleText: "حدث خطأ في الخادم.");
         }
-        update();
+        // update();
       },
       (success) async {
         // إذا نجح الطلب
-        responce = StatusRequest.success;
+        responce.value = StatusRequest.success;
         // coaches = success.map((item) => Coach.fromJson(item)).toList();
         // List<dynamic> data = success;
 
-        trainees = success.map((item) => UserInfoModel.fromJson(item)).toList();
+         trainees.value = success.map((item) => UserInfoModel.fromJson(item)).toList();
         print(trainees);
         //  إرسال الطلبات المتوازية لحالة البرنامج لكل متدرب
         List<Future> futures = [];
@@ -97,8 +96,8 @@ class MyTraineeController extends GetxController {
         await Future.wait(futures);
         //    coaches = data.map((item) => Coach.fromJson(item)).toList();
         //  coaches = result;
-        isLoading = false;
-        update();
+        isLoading.value = false; 
+        // update();
       },
     );
   }

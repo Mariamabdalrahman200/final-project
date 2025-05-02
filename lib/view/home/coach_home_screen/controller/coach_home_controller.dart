@@ -1,7 +1,6 @@
 import 'package:final_project/core/service/app_keys.dart';
 import 'package:final_project/core/service/my_service.dart';
 import 'package:final_project/core/service/session/user_info_controller.dart';
-import 'package:final_project/core/service/session/user_session.dart';
 import 'package:get/get.dart';
 
 class CoachHomeController extends GetxController {

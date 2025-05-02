@@ -4,7 +4,6 @@ import 'package:final_project/core/service/app_keys.dart';
 import 'package:final_project/core/service/link.dart';
 import 'package:final_project/core/service/my_service.dart';
 import 'package:final_project/core/service/session/user_info_controller.dart';
-import 'package:final_project/core/service/session/user_session.dart';
 import 'package:final_project/models/program_model/program_model.dart';
 import 'package:final_project/models/request_model/request_model.dart';
 import 'package:final_project/models/user_info_model/user_info_model.dart';
@@ -79,7 +78,7 @@ class ViewWorkoutController extends GetxController {
       },
       (success) {
         responce = StatusRequest.success;
-
+        print(success);
         try {
           program = ProgramModel.fromJson(success);
           isLoading = false;
@@ -107,9 +106,54 @@ class ViewWorkoutController extends GetxController {
     return grouped;
   }
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-
-  // }
+  Future<void> deleteProgram() async {
+    isLoading = true;
+    update();
+    int programId = program!.id;
+    int userId = user.id;
+    final result = await crud().deleteData(
+      '${AppLink.deleteprogram}/$programId/$userId/',
+      {
+        'Accept': 'application/json',
+      },
+    );
+    result.fold(
+      (failure) {
+        isLoading = false;
+        if (failure == StatusRequest.failure) {
+          this.responceMessage = crud.message;
+          Get.snackbar(
+            " ",
+            responceMessage,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.grey[200],
+            colorText: Colors.black,
+            margin: EdgeInsets.all(10),
+            borderRadius: 8,
+            boxShadows: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          );
+        }
+        if (failure == StatusRequest.offLineFailure) {
+          Get.snackbar("خطأ", "لا يوجد اتصال بالإنترنت");
+        } else {
+          Get.snackbar("خطأ", crud.message);
+        }
+        update();
+      },
+      (success) {
+        isLoading = false;
+        program = null;
+        update();
+        Get.back(result: true);
+        Get.snackbar("تم", "تم حذف البرنامج بنجاح");
+      },
+    );
+  }
 }

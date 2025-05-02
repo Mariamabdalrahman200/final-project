@@ -1,5 +1,6 @@
 import 'package:final_project/core/class/crud.dart';
 import 'package:final_project/core/class/status_request.dart';
+import 'package:final_project/core/const_data/routes.dart';
 import 'package:final_project/core/service/link.dart';
 import 'package:final_project/core/service/session/user_info_controller.dart';
 import 'package:final_project/models/Day_program_model/Day_program.dart';
@@ -13,13 +14,13 @@ class BuildProgramController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-  //  getExercises();
    getExercisesByMuscle(selectedMuscle);
   }
 
   final setsController = TextEditingController();
   final repsController = TextEditingController();
   bool isLoading = false;
+  bool isLoadingSend = false;
   StatusRequest responce = StatusRequest.loading;
   String responceMessage = '';
   List<ExerciseModel> exercises = [];
@@ -87,6 +88,9 @@ void selectMuscleGroup(String group) {
     } else {
       if (current.exercises.contains(exerciseId)) {
         current.exercises.remove(exerciseId);
+         if (current.exercises.isEmpty) {
+        selectedPrograms.remove(selectedDay);
+      }
       } else {
         current.exercises.add(exerciseId);
       }
@@ -95,9 +99,15 @@ void selectMuscleGroup(String group) {
     update();
   }
 
+  // List<Map<String, dynamic>> getProgramBody() {
+  //   return selectedPrograms.values.map((p) => p.toJson()).toList();
+  // }
   List<Map<String, dynamic>> getProgramBody() {
-    return selectedPrograms.values.map((p) => p.toJson()).toList();
-  }
+  return selectedPrograms.values
+      .where((p) => p.exercises.isNotEmpty)
+      .map((p) => p.toJson())
+      .toList();
+}
 
   bool isExerciseSelected(int exerciseId) {
     return selectedPrograms[selectedDay]?.exercises.contains(exerciseId) ??
@@ -109,7 +119,7 @@ void selectMuscleGroup(String group) {
     required int traineeId,
     String description = "برنامج تدريب جديد",
   }) async {
-    isLoading = true;
+    isLoadingSend = true;
     update();
     final body = {
       "description": description,
@@ -128,7 +138,7 @@ void selectMuscleGroup(String group) {
 
     response.fold(
       (failure) {
-        isLoading = false;
+        isLoadingSend = false;
         update();
         Get.snackbar(
           "خطأ",
@@ -139,7 +149,7 @@ void selectMuscleGroup(String group) {
         );
       },
       (success) {
-        isLoading = false;
+        isLoadingSend = false;
         update();
         Get.snackbar(
           "تم بنجاح",
@@ -148,6 +158,7 @@ void selectMuscleGroup(String group) {
           colorText: Colors.black,
           snackPosition: SnackPosition.BOTTOM,
         );
+      
       },
     );
   }
@@ -204,7 +215,7 @@ void initializeEditProgram(ProgramModel program) {
     }
   }
 
-  // نبدأ بأول يوم موجود
+  
   if (selectedPrograms.isNotEmpty) {
     final firstDayEntry = selectedPrograms.entries.first;
     selectedDay = firstDayEntry.key;
@@ -215,6 +226,54 @@ void initializeEditProgram(ProgramModel program) {
   isEditInitialized = true;
   update();
 }
+Future<void> updateProgram({
+  required int programId,
+  String description = "تحديث البرنامج التدريبي",
+}) async {
+  isLoadingSend = true;
+  update();
+
+  final body = {
+    "description": description,
+    "days_exercises": getProgramBody(),
+  };
+    final UserController userController = Get.find();
+    int coachId = userController.currentUser!.id;
+
+  final url = "${AppLink.updateprogram}/$coachId/$programId/";
+
+  final response = await crud().postData(url, body, {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  });
+
+  response.fold(
+    (failure) {
+      isLoadingSend = false;
+      update();
+      Get.snackbar(
+        "خطأ",
+        "فشل في تحديث البرنامج",
+        backgroundColor: Colors.red[100],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    },
+    (success) {
+      isLoadingSend = false;
+      update();
+      Get.snackbar(
+        "تم التحديث",
+        "تم تحديث البرنامج بنجاح",
+        backgroundColor: Colors.green[100],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    },
+  );
+}
+
+
 
 
 

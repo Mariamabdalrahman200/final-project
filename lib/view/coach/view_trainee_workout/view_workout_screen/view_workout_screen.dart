@@ -12,7 +12,6 @@ import 'package:get/get.dart';
 class ViewWorkoutScreen extends StatelessWidget {
   final UserInfoModel user;
   const ViewWorkoutScreen({super.key, required this.user});
-
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -168,12 +167,15 @@ class ViewWorkoutScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {
-                              Get.to(
-                                BuildProgramScreen(user: user,isEditMode: true,
-    existingProgram: controller.program,),
-                              
+                            onPressed: () async {
+                              await Get.to(
+                                BuildProgramScreen(
+                                  user: user,
+                                  isEditMode: true,
+                                  existingProgram: controller.program,
+                                ),
                               );
+                              controller.getProgram();
                             },
                             icon: Icon(Icons.edit, color: Colors.white),
                             label: Text("Edit",
@@ -202,13 +204,14 @@ class ViewWorkoutScreen extends StatelessWidget {
                                 content: Text(
                                     "Are you sure you want to delete the program?"),
                                 confirm: ElevatedButton(
-                                  onPressed: () {
-                                    // controller.deleteProgram(userId: user.id.toString());
-                                    Get.back(); // إغلاق الحوار
-                                    Get.back(); // الرجوع للخلف بعد الحذف
+                                  onPressed: () async {
+                                    Get.back(); 
+                                    await controller
+                                        .deleteProgram();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColor.blue),
+                                    backgroundColor: AppColor.blue,
+                                  ),
                                   child: Text("Yes"),
                                 ),
                                 cancel: TextButton(

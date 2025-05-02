@@ -100,11 +100,6 @@ class crud {
     }
   }
 
-
-
-
-
-
   Future<Either<StatusRequest, Map>> updateData(
       String linkUrl, Map data, Map<String, String> header) async {
     try {
@@ -142,46 +137,55 @@ class crud {
     }
   }
 
-  Future<Either<StatusRequest, Map<String, dynamic>>> deleteData(
-      String linkUrl, Map<String, String> header) async {
-    try {
-      if (await checkInternet()) {
-        var response = await http.delete(
-          Uri.parse(linkUrl),
-          headers: header,
-        );
 
-        print("Delete Response: ${response.statusCode}");
-        print("Delete Response Body: ${response.body}");
+Future<Either<StatusRequest, Map<String, dynamic>>> deleteData(
+    String linkUrl, Map<String, String> header) async {
+  try {
+    if (await checkInternet()) {
+      var response = await http.delete(
+        Uri.parse(linkUrl),
+        headers: header,
+      );
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          // في حال كانت الاستجابة تحتوي على جسم (Body)
+      print("Delete Response: ${response.statusCode}");
+      print("Delete Response Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // نحاول تحويل الجسم إلى JSON
+        try {
           var responseBody = jsonDecode(response.body);
           print("Delete Response Body (Decoded): $responseBody");
-          return Right(responseBody);
-        } else if (response.statusCode == 204) {
-          // في حال كانت الاستجابة 204 No Content (لا تحتوي على محتوى)
-          print("Delete success with no content (204)");
-          return const Right({});
-        } else {
-          // في حال كانت الاستجابة تحتوي على خطأ
-          var responseBody = jsonDecode(response.body);
-          print("Delete Error Response Body (Decoded): $responseBody");
 
-          if (responseBody.containsKey('message')) {
-            message = responseBody['message'];
+          if (responseBody is Map<String, dynamic>) {
+            return Right(responseBody);
           } else {
-            message = 'فشل في عملية الحذف';
+            return Right({"message": responseBody.toString()});
           }
-
-          return const Left(StatusRequest.failure);
+        } catch (e) {
+          // في حال لم يكن JSON أصلاً، نرجعه كسطر نصي داخل map
+          print("Decoding error: $e");
+          return Right({"message": response.body});
         }
+      } else if (response.statusCode == 204) {
+        return const Right({});
       } else {
-        return const Left(StatusRequest.offLineFailure);
+        var responseBody = jsonDecode(response.body);
+        print("Delete Error Response Body (Decoded): $responseBody");
+
+        if (responseBody is Map && responseBody.containsKey('message')) {
+          message = responseBody['message'];
+        } else {
+          message = 'فشل في عملية الحذف';
+        }
+
+        return const Left(StatusRequest.failure);
       }
-    } catch (e) {
-      print("Delete Exception: $e");
-      return const Left(StatusRequest.serverFailure);
+    } else {
+      return const Left(StatusRequest.offLineFailure);
     }
+  } catch (e) {
+    print("Delete Exception: $e");
+    return const Left(StatusRequest.serverFailure);
   }
+}
 }

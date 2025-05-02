@@ -1,10 +1,12 @@
 import 'package:final_project/core/const_data/app_colors.dart';
+import 'package:final_project/core/responsive/responsive_config.dart';
 import 'package:final_project/view/auth/widget/custom_botton.dart';
 import 'package:final_project/view/trainee/select_coach_screen/controller/select_coach_controller.dart';
 import 'package:final_project/view/trainee/select_coach_screen/widget/coach_details_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class SelectCoachScreen extends StatelessWidget {
@@ -12,51 +14,35 @@ class SelectCoachScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var media = MediaQuery.of(context).size;
     final SelectCoachController controller = Get.put(SelectCoachController());
     return GetBuilder<SelectCoachController>(
-        //  init: SelectCoachController(),
-        builder: (controller) => Scaffold(
-                body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.start,
-                    //   children: [
-                    //     IconButton(
-                    //       icon: Icon(Icons.arrow_back),
-                    //       onPressed: () {
-                    //         Get.back();
-                    //       },
-                    //     ),
-                    //   ],
-                    // ),
-                    SizedBox(
-                      height: media.width * 0.13,
-                    ),
-                    Text("Select a coach to start your fitness journey",
-                        style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            //  fontWeight: FontWeight.w700,
-                            fontFamily: 'SourceSerif4')),
-                    SizedBox(
-                      height: media.width * 0.12,
-                    ),
-                    controller.isLoading
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : Expanded(
-                            child: ListView.builder(
+        builder: (controller) => ResponsiveConfig.setupResponsiveWrapper(
+          child: Scaffold(
+                  body: SafeArea(
+                child: Padding(
+                  padding:  EdgeInsets.all(16.w),
+                  child: Column(
+                    children: [
+                   SizedBox(height: 0.05.sh),
+                      Text("Select a coach to start your fitness journey",
+                          style: TextStyle(
+                              fontSize: 22.sp,
+                              fontWeight: FontWeight.bold,
+                              //  fontWeight: FontWeight.w700,
+                              fontFamily: 'SourceSerif4')),
+                     SizedBox(height: 0.03.sh),
+                      Expanded(
+                        child: controller.isLoading
+                            ? Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : ListView.builder(
                               itemCount: controller.coaches.length,
                               itemBuilder: (context, index) {
                                 final coach = controller.coaches[index];
                                 final isSelected =
                                     controller.selectedCoachIndex == index;
-
+                                                        
                                 return GestureDetector(
                                   onTap: () {
                                     // controller.selectCoach(index);
@@ -70,30 +56,31 @@ class SelectCoachScreen extends StatelessWidget {
                                           controller.selectCoach(index);
                                           controller.sendRequestToCoach(
                                               coach.id.toString());
-                          
+                                                        
                                         },
                                       ),
                                     );
                                   },
                                   child: Container(
-                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    width: double.infinity,
+                                    margin: EdgeInsets.symmetric(vertical: 8.h),
                                     padding: EdgeInsets.symmetric(
-                                        vertical: 16, horizontal: 16),
+                                        vertical: 16.h, horizontal: 16.w),
                                     // decoration: BoxDecoration(
                                     //   color:
-
+                                                        
                                     //        Colors.white,
                                     //   borderRadius: BorderRadius.circular(12),
                                     //   border: Border.all(
                                     //     color:
-
+                                                        
                                     //          Colors.transparent,
-
+                                                        
                                     //   ),
                                     // ),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(12.r),
                                       border: Border.all(
                                         color: Colors
                                             .grey.shade300,
@@ -112,37 +99,25 @@ class SelectCoachScreen extends StatelessWidget {
                                       Text(
                                         coach.username,
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 18.sp,
                                             fontWeight: FontWeight.w500,
                                             color: Colors.black,
                                             fontFamily: 'Poppins'),
                                       ),
-                                      SizedBox(height: 8),
+                                      SizedBox(height: 8.h),
                                     ]),
                                   ),
                                 );
                               },
                             ),
-                          ),
-                    SizedBox(
-                      height: media.width * 0.2,
-                    ),
-                    // CustomButton(
-                    //   text: 'Next',
-                    //   onTap: () {
-                    //     FocusScope.of(context).unfocus();
-                    //     // Get.offNamed('/secondScreen');
-                    //     //  controller.register();
-                    //     controller.sendRequestToCoach(controller
-                    //         .coaches[controller.selectedCoachIndex].id
-                    //         .toString());
-
-                    //     // Get.toNamed('/experianseScreen');
-                    //   },
-                    // ),
-                  ],
+                      ),
+                            
+                       SizedBox(height: 16.h),
+                      
+                    ],
+                  ),
                 ),
-              ),
-            )));
+              )),
+        ));
   }
 }

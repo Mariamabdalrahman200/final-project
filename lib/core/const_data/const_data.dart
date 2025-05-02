@@ -1,11 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:responsive_framework/responsive_framework.dart';
 
 class ConstData {
   static bool isLogin = false;
 
   static String token = "";
+
+// static  List<ResponsiveBreakpoint>points=[
+//     ResponsiveBreakpoint.resize(450,name:MOBILE),
+//     ResponsiveBreakpoint.autoScale(800,name:TABLET),
+//     ResponsiveBreakpoint.autoScale(1000,name:DESKTOP),
+//     ResponsiveBreakpoint.autoScale(1200,name:"LARGE_DESKTOP"),
+//   ];
+  static List<Breakpoint> points = [
+    Breakpoint(start: 0, end: 450, name: MOBILE),
+    Breakpoint(start: 451, end: 800, name: TABLET),
+    Breakpoint(start: 801, end: 1000, name: DESKTOP),
+    Breakpoint(start: 1001, end: 1200, name: "LARGE_DESKTOP"),
+  ];
+
 
   static Future<void> UpdateToken(                   ) async {
     const String clientId = '';
